@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Anmelden | Scootermania{% endblock %}
+{% block content %}
+<div class="form-card narrow">
+    <h1>Anmelden</h1>
+    <form method="POST" class="stack">
+        <label>E-Mail oder Benutzername
+            <input type="text" name="login" required>
+        </label>
+        <label>Passwort
+            <input type="password" name="password" required>
+        </label>
+        <button class="button primary" type="submit">Anmelden</button>
+    </form>
+    <p>Noch kein Zugang vorhanden? <a href="{{ url_for('auth.register') }}">Jetzt Konto erstellen</a></p>
+</div>
+{% endblock %}

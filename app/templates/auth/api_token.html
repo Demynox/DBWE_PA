@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}API-Token | Scootermania{% endblock %}
+{% block content %}
+<section class="api-hero">
+    <div class="api-hero-copy">
+        <p class="eyebrow">REST API</p>
+        <h1>API-Zugriff für Integrationen</h1>
+        <p class="lead api-lead">Erstelle einen Bearer-Token für dein Konto und greife direkt über <code>curl</code>, Postman oder eigene Integrationen auf die API zu.</p>
+        <div class="api-actions">
+            <form method="POST">
+                <button class="button primary" type="submit">Neuen Token generieren</button>
+            </form>
+        </div>
+        <div class="api-meta">
+            <span class="api-chip">Bearer-Token</span>
+            <span class="api-chip">JSON</span>
+            <span class="api-chip">Read Only</span>
+        </div>
+    </div>
+    <div class="api-hero-card">
+        <p class="api-card-label">Beispiel-Endpunkte</p>
+        <ul class="api-endpoint-list">
+            <li><code>GET /api/health</code></li>
+            <li><code>GET /api/scooters</code></li>
+            <li><code>GET /api/rides</code></li>
+        </ul>
+        <p class="api-card-note">Die fachlichen Endpunkte erwarten einen gültigen Bearer-Token im Header <code>Authorization</code>.</p>
+    </div>
+</section>
+
+<div class="api-grid api-grid-wide">
+    <section class="api-panel api-panel-strong">
+        <div class="api-panel-head">
+            <div>
+                <h2>Aktueller Token</h2>
+                <p>Der neu erzeugte Token wird hier angezeigt und kann direkt übernommen werden.</p>
+            </div>
+        </div>
+        {% if token %}
+            <div class="token-box">{{ token }}</div>
+        {% else %}
+            <div class="token-box muted-box">Es wurde noch kein neuer Token generiert. Nutze die Aktion oben, um einen aktuellen Token bereitzustellen.</div>
+        {% endif %}
+    </section>
+
+    <section class="api-panel">
+        <div class="api-panel-head">
+            <div>
+                <h2>Beispiel mit curl</h2>
+                <p>Mit diesem Beispiel lassen sich Fahrzeugdaten direkt abrufen.</p>
+            </div>
+        </div>
+        <pre class="code-block wrap-code">curl -H "Authorization: Bearer DEIN_TOKEN" "{{ request.url_root.rstrip('/') }}/api/scooters"</pre>
+        <p class="api-hint">Ersetze <code>DEIN_TOKEN</code> durch den aktuell generierten Wert.</p>
+    </section>
+</div>
+{% endblock %}

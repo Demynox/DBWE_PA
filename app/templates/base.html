@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Scootermania{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="site-header">
+        <div class="container nav-wrap">
+            <a class="brand" href="{{ url_for('main.index') }}">Scootermania</a>
+            <nav>
+                <a href="{{ url_for('main.index') }}">Start</a>
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('scooters.list_scooters') }}">Fahrzeuge</a>
+                    <a href="{{ url_for('rides.list_rides') }}">Fahrten</a>
+                    <a href="{{ url_for('auth.api_token') }}">API</a>
+                    {% if current_user.can_manage_scooters() %}
+                        <a href="{{ url_for('scooters.create_scooter') }}">Neues Fahrzeug</a>
+                    {% endif %}
+                    <a href="{{ url_for('auth.logout') }}">Abmelden</a>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}">Anmelden</a>
+                    <a href="{{ url_for('auth.register') }}">Konto eröffnen</a>
+                {% endif %}
+            </nav>
+        </div>
+    </header>
+
+    <main class="container page-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="flash-list">
+                    {% for category, message in messages %}
+                        <div class="flash {{ category }}">{{ message }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </main>
+    <script>
+        function getValidationMessage(field) {
+            if (field.validity.valueMissing) {
+                return "Bitte dieses Feld ausfüllen.";
+            }
+            if (field.validity.typeMismatch && field.type === "email") {
+                return "Bitte eine gültige E-Mail-Adresse eingeben.";
+            }
+            if (field.validity.badInput || field.validity.stepMismatch) {
+                return "Bitte einen gültigen Wert eingeben.";
+            }
+            if (field.validity.rangeUnderflow || field.validity.rangeOverflow) {
+                return "Bitte einen Wert im zulässigen Bereich eingeben.";
+            }
+            return "";
+        }
+
+        function applyValidationMessage(field) {
+            field.setCustomValidity("");
+            if (!field.checkValidity()) {
+                field.setCustomValidity(getValidationMessage(field));
+            }
+        }
+
+        document.querySelectorAll("form").forEach((form) => {
+            form.addEventListener("submit", (event) => {
+                const fields = form.querySelectorAll("input, select, textarea");
+                fields.forEach(applyValidationMessage);
+
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    form.reportValidity();
+                }
+            });
+        });
+
+        document.addEventListener("invalid", (event) => {
+            if (event.target instanceof HTMLInputElement || event.target instanceof HTMLSelectElement || event.target instanceof HTMLTextAreaElement) {
+                applyValidationMessage(event.target);
+            }
+        }, true);
+
+        document.addEventListener("input", (event) => {
+            if (event.target instanceof HTMLInputElement || event.target instanceof HTMLTextAreaElement) {
+                event.target.setCustomValidity("");
+            }
+        });
+
+        document.addEventListener("change", (event) => {
+            if (event.target instanceof HTMLInputElement || event.target instanceof HTMLSelectElement || event.target instanceof HTMLTextAreaElement) {
+                event.target.setCustomValidity("");
+            }
+        });
+    </script>
+</body>
+</html>

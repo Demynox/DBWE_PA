@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}Start | Scootermania{% endblock %}
+{% block content %}
+<section class="hero">
+    <div>
+        <p class="eyebrow">Digitale Mikromobilität in der Schweiz</p>
+        <h1>Städtische Mobilität einfach verwalten und flexibel nutzen.</h1>
+        <p class="lead">Scootermania verbindet Fahrer und Anbieter auf einer zentralen Plattform für Fahrzeugzugriff, Flottenverwaltung und transparente Abrechnung.</p>
+        <div class="hero-actions">
+            {% if current_user.is_authenticated %}
+                <a class="button primary" href="{{ url_for('scooters.list_scooters') }}">Fahrzeuge anzeigen</a>
+                {% if current_user.role == 'rider' %}
+                    <a class="button secondary" href="{{ url_for('rides.scan_qr') }}">Fahrt starten</a>
+                {% endif %}
+            {% else %}
+                <a class="button primary" href="{{ url_for('auth.login') }}">Anmelden</a>
+                <a class="button secondary" href="{{ url_for('auth.register') }}">Konto eröffnen</a>
+            {% endif %}
+        </div>
+    </div>
+    <div class="stats-card">
+        {% if current_user.is_authenticated %}
+            <div class="stat"><strong>{{ available_count }}</strong><span>verfügbare Fahrzeuge</span></div>
+            <div class="stat"><strong>{{ active_count }}</strong><span>aktive Fahrten</span></div>
+        {% else %}
+            <div class="stat"><strong>QR</strong><span>Fahrzeuge per Code freischalten</span></div>
+            <div class="stat"><strong>24/7</strong><span>Nutzung und Verwaltung jederzeit im Blick</span></div>
+        {% endif %}
+        <div class="stat"><strong>CHF {{ '%.2f'|format(unlock_fee) }}</strong><span>Startpreis</span></div>
+        <div class="stat"><strong>CHF {{ '%.2f'|format(price_per_minute) }}</strong><span>pro Minute</span></div>
+    </div>
+</section>
+
+{% if current_user.is_authenticated %}
+<section class="card-grid">
+    {% for scooter in latest_scooters %}
+        <article class="card">
+            <h3>{{ scooter.code }}</h3>
+            <p>{{ scooter.model_name }}</p>
+            <p>{{ scooter.city }} &middot; Akku {{ scooter.battery_level }}%</p>
+            <span class="badge {{ scooter.status }}">{{ format_status_label(scooter.status) }}</span>
+        </article>
+    {% else %}
+        <article class="card">
+            <h3>Noch keine Fahrzeuge verfügbar</h3>
+            <p>Lege als Anbieter dein erstes Fahrzeug an, um die Flotte bereitzustellen.</p>
+        </article>
+    {% endfor %}
+</section>
+{% endif %}
+{% endblock %}

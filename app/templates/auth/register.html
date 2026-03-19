@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Konto erstellen | Scootermania{% endblock %}
+{% block content %}
+<div class="form-card">
+    <h1>Konto erstellen</h1>
+    <form method="POST" class="stack two-columns">
+        <label>Vorname
+            <input type="text" name="first_name" required>
+        </label>
+        <label>Nachname
+            <input type="text" name="last_name" required>
+        </label>
+        <label>Benutzername
+            <input type="text" name="username" required>
+        </label>
+        <label>E-Mail
+            <input type="email" name="email" required>
+        </label>
+        <label>Passwort
+            <input type="password" name="password" required>
+        </label>
+        <label>Passwort wiederholen
+            <input type="password" name="password_confirm" required>
+        </label>
+        <label>Rolle
+            <select name="role" id="role-select">
+                <option value="rider">Fahrer</option>
+                <option value="provider">Anbieter</option>
+            </select>
+        </label>
+        <label class="full" id="payment-method-field">Zahlungsmittel
+            <select name="payment_method" id="payment-method-input">
+                <option value="">Bitte auswählen</option>
+                <option value="Mastercard">Mastercard</option>
+                <option value="Visa">Visa</option>
+                <option value="Twint">Twint</option>
+                <option value="PayPal">PayPal</option>
+            </select>
+        </label>
+        <div class="full">
+            <button class="button primary" type="submit">Konto erstellen</button>
+        </div>
+    </form>
+</div>
+<script>
+    const roleSelect = document.getElementById("role-select");
+    const paymentMethodField = document.getElementById("payment-method-field");
+    const paymentMethodInput = document.getElementById("payment-method-input");
+
+    function updatePaymentMethodVisibility() {
+        const needsPaymentMethod = roleSelect.value === "rider";
+        paymentMethodField.style.display = needsPaymentMethod ? "grid" : "none";
+        paymentMethodInput.disabled = !needsPaymentMethod;
+        if (!needsPaymentMethod) {
+            paymentMethodInput.value = "";
+        }
+    }
+
+    updatePaymentMethodVisibility();
+    roleSelect.addEventListener("change", updatePaymentMethodVisibility);
+</script>
+{% endblock %}

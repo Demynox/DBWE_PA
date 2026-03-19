@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Fahrten | Scootermania{% endblock %}
+{% block content %}
+<div class="section-head">
+    <h1>Fahrtenübersicht</h1>
+    <p>Tarif: CHF {{ '%.2f'|format(unlock_fee) }} Grundpreis + CHF {{ '%.2f'|format(price_per_minute) }} pro Minute</p>
+</div>
+<div class="table-wrap">
+    <table class="compact-table rides-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Fahrzeug</th>
+                <th>Fahrer</th>
+                <th>Status</th>
+                <th>Distanz</th>
+                <th>Dauer</th>
+                <th>Preis</th>
+                <th>Zahlung</th>
+                <th>Start</th>
+                <th>Ende</th>
+                <th>Aktion</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ride in rides %}
+            <tr>
+                <td class="nowrap-cell">{{ ride.id }}</td>
+                <td class="nowrap-cell">{{ ride.scooter.code }}</td>
+                <td class="nowrap-cell">{{ ride.rider.username }}</td>
+                <td class="nowrap-cell"><span class="badge {{ ride.status }}">{{ format_status_label(ride.status) }}</span></td>
+                <td class="nowrap-cell">{{ '%.2f'|format(ride.distance_km) }} km</td>
+                <td class="nowrap-cell">{{ ride.duration_minutes }} min</td>
+                <td class="nowrap-cell">CHF {{ '%.2f'|format(ride.total_price|float) }}</td>
+                <td class="nowrap-cell">{{ format_status_label(ride.payment_transaction.status) if ride.payment_transaction else '-' }}</td>
+                <td class="nowrap-cell">{{ ride.started_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                <td class="nowrap-cell">{{ ride.ended_at.strftime('%d.%m.%Y %H:%M') if ride.ended_at else '-' }}</td>
+                <td>
+                    {% if ride.status == 'active' and current_user.id == ride.rider_id %}
+                        <a class="button small primary" href="{{ url_for('rides.end_ride', ride_id=ride.id) }}">Fahrt beenden</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="11">Derzeit liegen keine Fahrten vor.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

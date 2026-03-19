@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}QR-Code scannen | Scootermania{% endblock %}
+{% block content %}
+<div class="form-card">
+    <h1>Fahrt freischalten</h1>
+    <p>Gib den Fahrzeugcode ein, um das passende Fahrzeug zu öffnen und die Fahrt zu starten.</p>
+    {% if scooter %}
+        <div class="form-card compact">
+            <h2>{{ scooter.code }}</h2>
+            <p>{{ scooter.model_name }} in {{ scooter.city }} mit {{ scooter.battery_level }}% Akkustand.</p>
+            <form method="POST" action="{{ url_for('rides.start_ride', scooter_id=scooter.id) }}">
+                <button class="button primary" type="submit">Fahrt starten</button>
+            </form>
+        </div>
+    {% else %}
+        <form method="POST" class="stack">
+            <label>Fahrzeugcode
+                <input type="text" name="qr_code" placeholder="z. B. SC-SW-1001" required>
+            </label>
+            <button class="button primary" type="submit">Fahrzeug prüfen</button>
+        </form>
+    {% endif %}
+</div>
+{% endblock %}

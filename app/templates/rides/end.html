@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block title %}Fahrt beenden | Scootermania{% endblock %}
+{% block content %}
+<div class="form-card">
+    <h1>Fahrt abschliessen</h1>
+    <p>Das Fahrzeug {{ ride.scooter.code }} wurde am {{ ride.started_at.strftime('%d.%m.%Y %H:%M') }} aktiviert. Die Abrechnung erfolgt minutengenau.</p>
+    <form method="POST" class="stack two-columns">
+        <label>Zurückgelegte Distanz in km
+            <input type="number" step="0.01" name="distance_km" required>
+        </label>
+        <label>Aktuelle Latitude
+            <input type="number" step="0.000001" name="end_latitude" value="{{ ride.scooter.latitude }}" required>
+        </label>
+        <label>Aktuelle Longitude
+            <input type="number" step="0.000001" name="end_longitude" value="{{ ride.scooter.longitude }}" required>
+        </label>
+        <div class="full">
+            <button class="button primary" type="submit">Fahrt abschliessen und abrechnen</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

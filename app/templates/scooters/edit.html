@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+{% block title %}Scooter bearbeiten | Scootermania{% endblock %}
+{% block content %}
+<div class="form-card">
+    <h1>Fahrzeug bearbeiten</h1>
+    <form method="POST" class="stack two-columns">
+        <label>Modellname
+            <input type="text" name="model_name" value="{{ scooter.model_name }}" required>
+        </label>
+        <label>Akku in %
+            <input type="number" name="battery_level" min="0" max="100" value="{{ scooter.battery_level }}" required>
+        </label>
+        <label>Stadt
+            <input type="text" name="city" value="{{ scooter.city }}" required>
+        </label>
+        <label>Status
+            <select name="status">
+                <option value="available" {% if scooter.status == 'available' %}selected{% endif %}>Verfügbar</option>
+                <option value="maintenance" {% if scooter.status == 'maintenance' %}selected{% endif %}>In Wartung</option>
+                <option value="in_use" {% if scooter.status == 'in_use' %}selected{% endif %}>In Benutzung</option>
+            </select>
+        </label>
+        <label>Latitude
+            <input type="number" step="0.000001" name="latitude" value="{{ scooter.latitude }}" required>
+        </label>
+        <label>Longitude
+            <input type="number" step="0.000001" name="longitude" value="{{ scooter.longitude }}" required>
+        </label>
+        <div class="full">
+            <button class="button primary" type="submit">Änderungen speichern</button>
+        </div>
+    </form>
+</div>
+{% endblock %}

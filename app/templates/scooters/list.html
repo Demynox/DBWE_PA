@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block title %}Fahrzeuge | Scootermania{% endblock %}
+{% block content %}
+<div class="section-head">
+    <h1>Fahrzeugübersicht</h1>
+    <form method="GET">
+        <select name="status" onchange="this.form.submit()">
+            <option value="">Alle Status</option>
+            <option value="available" {% if status == 'available' %}selected{% endif %}>Verfügbar</option>
+            <option value="in_use" {% if status == 'in_use' %}selected{% endif %}>In Benutzung</option>
+            <option value="maintenance" {% if status == 'maintenance' %}selected{% endif %}>In Wartung</option>
+        </select>
+    </form>
+</div>
+{% if current_user.role == 'rider' %}
+<div class="form-card compact">
+    <h2>Fahrzeugzugriff</h2>
+    <form method="POST" action="{{ url_for('rides.scan_qr') }}" class="stack">
+        <label>Fahrzeugcode
+            <input type="text" name="qr_code" placeholder="z. B. SC-ZRH-1001" required>
+        </label>
+        <button class="button primary" type="submit">Fahrt starten</button>
+    </form>
+</div>
+{% endif %}
+<div class="table-wrap">
+    <table class="compact-table scooters-table">
+        <thead>
+            <tr>
+                <th>Code</th>
+                <th>Modell</th>
+                <th>Ort</th>
+                <th>GPS</th>
+                <th>Akku</th>
+                <th>Status</th>
+                <th>Anbieter</th>
+                <th>Aktion</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for scooter in scooters %}
+            <tr>
+                <td class="nowrap-cell">{{ scooter.code }}</td>
+                <td class="nowrap-cell">{{ scooter.model_name }}</td>
+                <td class="nowrap-cell">{{ scooter.city }}</td>
+                <td class="nowrap-cell">{{ '%.5f'|format(scooter.latitude) }}, {{ '%.5f'|format(scooter.longitude) }}</td>
+                <td class="nowrap-cell">{{ scooter.battery_level }}%</td>
+                <td class="nowrap-cell"><span class="badge {{ scooter.status }}">{{ format_status_label(scooter.status) }}</span></td>
+                <td class="nowrap-cell">{{ scooter.provider.username }}</td>
+                <td class="action-cell">
+                    {% if scooter.status == 'available' and current_user.role == 'rider' %}
+                        <form method="POST" action="{{ url_for('rides.start_ride', scooter_id=scooter.id) }}">
+                            <button class="button small primary" type="submit">Jetzt starten</button>
+                        </form>
+                    {% endif %}
+                    {% if current_user.can_manage_scooters() and scooter.provider_id == current_user.id %}
+                        <div class="action-row compact-actions">
+                            <a class="button small secondary" href="{{ url_for('scooters.edit_scooter', scooter_id=scooter.id) }}">Verwalten</a>
+                            <form method="POST" action="{{ url_for('scooters.delete_scooter', scooter_id=scooter.id) }}">
+                                <button class="button small danger" type="submit">Entfernen</button>
+                            </form>
+                        </div>
+                    {% endif %}
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="8">Aktuell sind keine Fahrzeuge verfügbar.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
